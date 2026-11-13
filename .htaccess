@@ -1,0 +1,25 @@
+# Navalha & Cia — regras gerais para hospedagem compartilhada (Apache)
+
+# Nunca liste diretórios
+Options -Indexes
+
+# Bloqueia acesso direto a pastas internas
+RewriteEngine On
+RewriteCond %{REQUEST_URI} ^/(config|includes|database)/ [NC]
+RewriteRule ^ - [F,L]
+
+# sitemap.xml amigável -> public/sitemap.php
+RewriteRule ^sitemap\.xml$ public/sitemap.php [L]
+
+# Página inicial na raiz do domínio -> public/
+RewriteCond %{REQUEST_URI} ^/$
+RewriteRule ^$ public/index.php [L]
+
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set X-Frame-Options "SAMEORIGIN"
+</IfModule>
+
+<FilesMatch "\.(sql|md|env)$">
+  Require all denied
+</FilesMatch>
