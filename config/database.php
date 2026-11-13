@@ -7,9 +7,9 @@
 declare(strict_types=1);
 
 define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
-define('DB_NAME', getenv('DB_NAME') ?: 'barbearia');
-define('DB_USER', getenv('DB_USER') ?: 'root');
-define('DB_PASS', getenv('DB_PASS') ?: '');
+define('DB_NAME', getenv('DB_NAME') ?: 'u175022134_barber_test');
+define('DB_USER', getenv('DB_USER') ?: 'u175022134_barber_test');
+define('DB_PASS', getenv('DB_PASS') ?: 'BarberTeste123');
 define('DB_PORT', getenv('DB_PORT') ?: '3306');
 
 /**

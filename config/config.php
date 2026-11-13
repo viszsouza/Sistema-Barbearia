@@ -6,7 +6,7 @@
 declare(strict_types=1);
 
 define('APP_NAME',  'Navalha & Cia');
-define('APP_URL',   rtrim(getenv('APP_URL') ?: 'http://localhost/barbearia', '/'));
+define('APP_URL',   rtrim(getenv('APP_URL') ?: 'https://darkslategray-pheasant-178680.hostingersite.com', '/'));
 define('APP_DEBUG', filter_var(getenv('APP_DEBUG') ?: 'false', FILTER_VALIDATE_BOOL));
 define('APP_TZ',    'America/Recife');
 
