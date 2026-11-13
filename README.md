@@ -12,7 +12,7 @@ build step), pronto para hospedagem compartilhada.
 /assets      CSS, JS e imagens
 /includes    lógica compartilhada (auth, disponibilidade, notificações, layout)
 /config      configuração e conexão com o banco
-/database    schema.sql e seed.sql
+/database    schema.sql, seed.sql (base) e seed_demo.sql (opcional)
 install.php  instalador — apagar depois de usar
 ```
 
@@ -24,8 +24,11 @@ install.php  instalador — apagar depois de usar
    (ou pelas variáveis de ambiente `DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASS`).
 3. Ajuste `APP_URL` em `config/config.php` (ou a variável de ambiente
    `APP_URL`) para a URL real do site.
-4. Acesse `/install.php` no navegador, preencha seus dados de administrador
-   e marque se quer instalar com os dados de demonstração.
+4. Acesse `/install.php` no navegador e preencha seus dados de administrador.
+   A instalação é **limpa**: já vem com as *Configurações*, os *Serviços*
+   (com categorias) e o *horário de funcionamento*; barbeiros, clientes e
+   agendamentos começam vazios. Se quiser, marque a opção de demonstração
+   para também carregar barbeiros, clientes e uma agenda de exemplo.
 5. **Apague `install.php` do servidor** assim que a instalação terminar —
    deixá-lo publicado permite recriar o banco a qualquer momento.
 6. Entre em `/admin/login.php` com o e-mail e senha criados no passo 4.
@@ -100,3 +103,14 @@ Este projeto foi escrito sem um interpretador PHP disponível para rodar
 `php -l` linha a linha — a sintaxe foi revisada manualmente com cuidado,
 mas vale rodar um `php -l` em cada arquivo (ou simplesmente abrir o site)
 assim que subir para um ambiente com PHP antes de ir para produção.
+
+## Dados iniciais
+
+- `database/seed.sql` — instalado sempre: configurações, serviços/categorias e
+  horário de funcionamento.
+- `database/seed_demo.sql` — opcional (caixa no instalador): barbeiros,
+  clientes, agendamentos, pagamentos, bloqueios, feriados e depoimentos de exemplo.
+
+Depois de uma instalação limpa, o primeiro passo é cadastrar os barbeiros em
+**Barbeiros** (marcando os serviços que cada um atende). Enquanto não houver
+barbeiro ativo, o agendamento online mostra um aviso de indisponibilidade.

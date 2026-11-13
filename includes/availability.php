@@ -520,25 +520,40 @@ function can_cancel(array $appointment): bool
     return $startsAt - time() >= $limit * 3600;
 }
 
+/** Último erro de change_status() (para mostrar o motivo real no painel). */
+function status_error(): ?string
+{
+    return $GLOBALS['status_error'] ?? null;
+}
+
 /** Altera o status registrando o histórico. */
 function change_status(int $appointmentId, string $newStatus, ?int $userId = null, ?string $note = null): bool
 {
+    $GLOBALS['status_error'] = null;
+
     if (!array_key_exists($newStatus, appointment_statuses())) {
+        $GLOBALS['status_error'] = 'Situação inválida.';
         return false;
     }
     $current = get_appointment($appointmentId);
-    if (!$current || $current['status'] === $newStatus) {
+    if (!$current) {
+        $GLOBALS['status_error'] = 'Agendamento não encontrado.';
+        return false;
+    }
+    if ($current['status'] === $newStatus) {
+        $GLOBALS['status_error'] = 'O agendamento já está com essa situação.';
         return false;
     }
 
     $pdo = db();
-    $pdo->beginTransaction();
     try {
-        $pdo->prepare(
-            'UPDATE appointments
-             SET status = :s, cancelled_at = IF(:s2 = \'cancelled\', NOW(), cancelled_at)
-             WHERE id = :id'
-        )->execute([':s' => $newStatus, ':s2' => $newStatus, ':id' => $appointmentId]);
+        $pdo->beginTransaction();
+
+        // SQL simples e sem parâmetros dentro de funções (mais compatível entre MySQL/MariaDB)
+        $sql = $newStatus === 'cancelled'
+            ? 'UPDATE appointments SET status = :s, cancelled_at = NOW() WHERE id = :id'
+            : 'UPDATE appointments SET status = :s WHERE id = :id';
+        $pdo->prepare($sql)->execute([':s' => $newStatus, ':id' => $appointmentId]);
 
         $pdo->prepare(
             'INSERT INTO appointment_status_history (appointment_id, from_status, to_status, user_id, note)
@@ -561,7 +576,11 @@ function change_status(int $appointmentId, string $newStatus, ?int $userId = nul
         $pdo->commit();
         return true;
     } catch (Throwable $e) {
-        $pdo->rollBack();
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        error_log('[change_status] ' . $e->getMessage());
+        $GLOBALS['status_error'] = $e->getMessage();
         return false;
     }
 }

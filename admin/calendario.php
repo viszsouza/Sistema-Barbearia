@@ -8,7 +8,8 @@ require_permission('appointments.view');
 $pageTitle  = 'Calendário';
 $activeMenu = 'calendario';
 
-$view   = in_array($_GET['v'] ?? 'semana', ['dia', 'semana', 'mes'], true) ? $_GET['v'] : 'semana';
+$viewParam = (string) ($_GET['v'] ?? 'semana');
+$view   = in_array($viewParam, ['dia', 'semana', 'mes'], true) ? $viewParam : 'semana';
 $anchor = preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) ($_GET['d'] ?? '')) ? (string) $_GET['d'] : date('Y-m-d');
 $barber = (int) ($_GET['barbeiro'] ?? 0);
 

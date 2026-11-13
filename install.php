@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step === 'install') {
     if (!csrf_check()) {
         $error = 'Sessão expirada. Recarregue a página e tente novamente.';
     } else {
-        $withSeed = isset($_POST['with_seed']);
+        $withDemo = isset($_POST['with_demo']);
         $name     = trim((string) ($_POST['admin_name'] ?? ''));
         $email    = trim((string) ($_POST['admin_email'] ?? ''));
         $password = (string) ($_POST['admin_password'] ?? '');
@@ -60,8 +60,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step === 'install') {
             try {
                 $pdo = db();
                 run_sql_file($pdo, BASE_PATH . '/database/schema.sql');
-                if ($withSeed) {
-                    run_sql_file($pdo, BASE_PATH . '/database/seed.sql');
+                // Base: configurações, serviços e horário de funcionamento
+                run_sql_file($pdo, BASE_PATH . '/database/seed.sql');
+                // Opcional: barbeiros, clientes e agenda de exemplo
+                if ($withDemo) {
+                    run_sql_file($pdo, BASE_PATH . '/database/seed_demo.sql');
                 }
                 $pdo->prepare('INSERT INTO users (name, email, password_hash, role, status) VALUES (:n, :e, :p, \'super_admin\', 1)')
                     ->execute([':n' => $name, ':e' => $email, ':p' => password_hash($password, PASSWORD_DEFAULT)]);
@@ -105,9 +108,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step === 'install') {
         <?= csrf_field() ?>
         <input type="hidden" name="step" value="install">
 
+        <p class="muted" style="margin-bottom:12px">A instalação já inclui as <strong>configurações</strong>, os <strong>serviços</strong> e o <strong>horário de funcionamento</strong>. Barbeiros, clientes e agendamentos começam vazios.</p>
         <div class="field field--inline">
-          <input id="seed" type="checkbox" name="with_seed" value="1" checked>
-          <label for="seed">Instalar com dados de demonstração (serviços, barbeiros, agenda de exemplo)</label>
+          <input id="demo" type="checkbox" name="with_demo" value="1">
+          <label for="demo">Adicionar também dados de demonstração (barbeiros, clientes e agenda de exemplo)</label>
         </div>
 
         <h3 style="margin-top:22px">Seu usuário de administrador</h3>

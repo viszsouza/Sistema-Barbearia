@@ -70,10 +70,12 @@ require BASE_PATH . '/includes/header.php';
           <div class="stat__value"><?= e((string) setting('stat_years', '0')) ?></div>
           <div class="stat__label">anos de ofício</div>
         </div>
+        <?php if ($barbers): ?>
         <div class="stat">
           <div class="stat__value"><?= count($barbers) ?></div>
           <div class="stat__label">barbeiros na casa</div>
         </div>
+        <?php endif; ?>
         <div class="stat">
           <div class="stat__value"><?= (int) db()->query('SELECT COUNT(*) FROM services WHERE status = 1')->fetchColumn() ?></div>
           <div class="stat__label">serviços no cardápio</div>
@@ -85,6 +87,7 @@ require BASE_PATH . '/includes/header.php';
 </section>
 
 <!-- ----------------------------------------------------------- BARBEIROS -->
+<?php if ($barbers): ?>
 <section class="section" id="barbeiros">
   <div class="wrap">
     <div class="head">
@@ -112,6 +115,7 @@ require BASE_PATH . '/includes/header.php';
     </div>
   </div>
 </section>
+<?php endif; ?>
 
 <!-- --------------------------------------------------------- DIFERENCIAIS -->
 <section class="section section--sunken">

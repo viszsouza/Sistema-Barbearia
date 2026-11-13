@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (change_status($id, $status, (int) current_user()['id'], 'Alterado pelo painel')) {
             flash('Situação atualizada para "' . status_label($status) . '".');
         } else {
-            flash('Não foi possível alterar a situação.', 'error');
+            flash('Não foi possível alterar a situação. Motivo: ' . (status_error() ?: 'erro desconhecido'), 'error');
         }
     }
 

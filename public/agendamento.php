@@ -16,6 +16,7 @@ foreach (db()->query('SELECT barber_id, service_id FROM barber_services') as $ro
     $links[(int) $row['service_id']][] = (int) $row['barber_id'];
 }
 
+$ready    = !empty($services) && !empty($barbers); // sem serviço ou barbeiro não há o que agendar
 $customer = current_customer();
 
 $bootstrap = [
@@ -48,7 +49,7 @@ $bootstrap = [
 $pageTitle       = 'Agendar horário — ' . setting('business_name', APP_NAME);
 $pageDescription = 'Escolha o serviço, o barbeiro, a data e o horário. Disponibilidade em tempo real.';
 $activeNav       = '';
-$pageScript      = ASSETS_URL . '/js/agendamento.js';
+$pageScript      = $ready ? ASSETS_URL . '/js/agendamento.js' : null;
 require BASE_PATH . '/includes/header.php';
 ?>
 
@@ -59,6 +60,7 @@ require BASE_PATH . '/includes/header.php';
       <p>Os horários abaixo são consultados na agenda real dos barbeiros. O que aparece livre, está livre.</p>
     </div>
 
+    <?php if ($ready): ?>
     <ol class="steps" id="steps">
       <li data-step="1" data-state="active"><b><span class="steps__w">Etapa </span>1</b><span class="steps__t">Serviço</span></li>
       <li data-step="2"><b><span class="steps__w">Etapa </span>2</b><span class="steps__t">Barbeiro</span></li>
@@ -159,8 +161,17 @@ require BASE_PATH . '/includes/header.php';
         <p class="dim" style="font-size:.82rem;margin-top:18px">Pagamento na barbearia. Cancelamento online até <?= (int) setting('cancel_limit_hours', '24') ?>h antes.</p>
       </aside>
     </div>
+    <?php else: ?>
+      <div class="empty">
+        <strong>Agendamento online indisponível no momento</strong>
+        Ainda não há barbeiros ou serviços disponíveis para reserva. Fale com a gente pelo WhatsApp.
+        <div style="margin-top:18px"><a class="btn btn--primary btn--sm" href="<?= e(whatsapp_link('Olá! Gostaria de agendar um horário.')) ?>" target="_blank" rel="noopener">Falar no WhatsApp</a></div>
+      </div>
+    <?php endif; ?>
   </div>
 </section>
 
+<?php if ($ready): ?>
 <script id="booking-data" type="application/json"><?= json_encode($bootstrap, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG) ?></script>
+<?php endif; ?>
 <?php require BASE_PATH . '/includes/footer.php'; ?>

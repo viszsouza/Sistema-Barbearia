@@ -24,6 +24,14 @@ require BASE_PATH . '/includes/header.php';
       <p>Três mãos diferentes, o mesmo padrão de acabamento. Agende com quem você já conhece ou experimente outro.</p>
     </div>
 
+    <?php if (!$barbers): ?>
+      <div class="empty">
+        <strong>Nossa equipe estará aqui em breve</strong>
+        Ainda não há barbeiros cadastrados. Fale com a gente pelo WhatsApp.
+        <div style="margin-top:18px"><a class="btn btn--primary btn--sm" href="<?= e(whatsapp_link('Olá! Gostaria de saber mais sobre a barbearia.')) ?>" target="_blank" rel="noopener">Falar no WhatsApp</a></div>
+      </div>
+    <?php endif; ?>
+
     <?php foreach ($barbers as $b):
       $serviceStmt->execute([':b' => $b['id']]);
       $barberServices = $serviceStmt->fetchAll(PDO::FETCH_COLUMN);
